@@ -1,12 +1,16 @@
 package com.project.shoppapp.Entity;
 
 import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.Setter;
 import org.apache.catalina.User;
 
 import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "parking_ticket")
+@Getter
+@Setter
 public class ParkingTicket {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;

@@ -1,11 +1,15 @@
 package com.project.shoppapp.Entity;
 
 import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.util.List;
 
 @Entity
 @Table(name = "zone")
+@Getter
+@Setter
 public class Zone {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
