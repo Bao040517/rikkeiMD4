@@ -4,8 +4,11 @@ import com.project.demo.dtos.CourseCreateRequestDTO;
 import com.project.demo.models.Course;
 import com.project.demo.reponses.ApiResponse;
 import com.project.demo.reponses.CourseResponse;
+import com.project.demo.reponses.PageResponse;
 import com.project.demo.service.CourseService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -36,12 +39,17 @@ public class CourseController {
                 .build());
     }
     @GetMapping
-    public ResponseEntity<ApiResponse<List<CourseResponse>>> getAllCourses() {
+    public ResponseEntity<ApiResponse<Page<CourseResponse>>> getAllCourses(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(required = false) String sortBy,
+            @RequestParam(defaultValue = "DESC") Sort.Direction direction
+    ) {
         return ResponseEntity.ok(
-                ApiResponse.<List<CourseResponse>>builder()
+                ApiResponse.<PageResponse<CourseResponse>>builder()
                         .code("200")
                         .message("Get courses successfully")
-                        .data(courseService.findAll())
+                        .data(courseService.findAll(page,size,sortBy,direction))
                         .build()
         );
     }
