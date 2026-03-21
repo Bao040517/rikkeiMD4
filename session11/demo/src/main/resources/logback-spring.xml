@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+
+    <!-- ==========================================
+         Bài 5: Tùy biến cấu hình Log với logback-spring.xml
+         Bài 6: MDC requestId trong pattern
+         ========================================== -->
+
+    <!-- Property chung -->
+    <property name="LOG_PATTERN"
+              value="[%X{requestId:-NO_REQUEST}] %d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n"/>
+
+    <!-- ==========================================
+         Appender 1: Console với màu sắc (Color)
+         ========================================== -->
+    <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>[%X{requestId:-NO_REQUEST}] %d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %highlight(%-5level) %cyan(%logger{36}) - %msg%n</pattern>
+            <charset>UTF-8</charset>
+        </encoder>
+    </appender>
+
+    <!-- ==========================================
+         Appender 2: File log chung (patient_web_service.log)
+         Bài 3: Rolling file, max 2MB, lưu 7 ngày, nén .gz
+         ========================================== -->
+    <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>logs/patient_web_service.log</file>
+        <encoder>
+            <pattern>${LOG_PATTERN}</pattern>
+            <charset>UTF-8</charset>
+        </encoder>
+        <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+            <fileNamePattern>logs/patient_web_service.%d{yyyy-MM-dd}.%i.log.gz</fileNamePattern>
+            <maxFileSize>2MB</maxFileSize>
+            <maxHistory>7</maxHistory>
+            <totalSizeCap>50MB</totalSizeCap>
+        </rollingPolicy>
+    </appender>
+
+    <!-- ==========================================
+         Appender 3: File emergency.log - CHỈ lọc log mức ERROR
+         Bài 5: Phân loại log theo mức độ nghiêm trọng
+         ========================================== -->
+    <appender name="EMERGENCY_FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>logs/emergency.log</file>
+        <encoder>
+            <pattern>${LOG_PATTERN}</pattern>
+            <charset>UTF-8</charset>
+        </encoder>
+        <!-- Chỉ chấp nhận log ERROR -->
+        <filter class="ch.qos.logback.classic.filter.LevelFilter">
+            <level>ERROR</level>
+            <onMatch>ACCEPT</onMatch>
+            <onMismatch>DENY</onMismatch>
+        </filter>
+        <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+            <fileNamePattern>logs/emergency.%d{yyyy-MM-dd}.%i.log.gz</fileNamePattern>
+            <maxFileSize>2MB</maxFileSize>
+            <maxHistory>7</maxHistory>
+            <totalSizeCap>50MB</totalSizeCap>
+        </rollingPolicy>
+    </appender>
+
+    <!-- ==========================================
+         Cấu hình Logger levels (Bài 2)
+         ========================================== -->
+    <!-- Log Hibernate SQL ở mức DEBUG -->
+    <logger name="org.hibernate.SQL" level="DEBUG"/>
+    <logger name="org.hibernate.type.descriptor.sql.BasicBinder" level="TRACE"/>
+
+    <!-- Log package com.medical.service ở mức TRACE -->
+    <logger name="com.medical.service" level="TRACE"/>
+
+    <!-- Root logger -->
+    <root level="INFO">
+        <appender-ref ref="CONSOLE"/>
+        <appender-ref ref="FILE"/>
+        <appender-ref ref="EMERGENCY_FILE"/>
+    </root>
+
+</configuration>
